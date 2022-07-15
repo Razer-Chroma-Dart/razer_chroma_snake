@@ -1,0 +1,21 @@
+name: warnayarra_monorepo
+repository: https://github.com/Razer-Chroma-Dart/warnayarra.dart
+
+packages:
+  - razer_chroma/razer_chroma_rest_client
+  - warnayarra
+  - warnayarra_gui
+
+command:
+  bootstrap:
+    usePubspecOverrides: true
+  version:
+    message: |
+      chore: Publish packages
+
+      {new_package_versions}
+    includeScopes: false
+    includeCommitId: true
+    linkToCommits: true
+    workspaceChangelog: true
+    updateGitTagRefs: true

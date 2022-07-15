@@ -1,0 +1,39 @@
+name: CD
+
+on:
+  push:
+    branches:
+      - beta
+
+jobs:
+  deploy:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: beta
+          architecture: x64
+      - run: flutter config --suppress-analytics --no-analytics --enable-web
+      - run: |
+          flutter pub global activate melos
+          melos bootstrap
+
+      # Generate version names
+      - name: Create version names
+        id: versions
+        run: |
+          cd warnayarra_gui
+          echo "::set-output name=gui_version::$(grep 'version:' pubspec.yaml | awk '{ print $2 }' | cut -d'+' -f 1)b"
+          cd ..
+
+      # Deploy to Web
+      - uses: bluefireteam/flutter-gh-pages@v8
+        with:
+          workingDir: warnayarra_gui
+          targetBranch: gh-pages
+          baseHref: /${{ github.event.repository.name }}/
+          webRenderer: canvaskit
+          customArgs: --build-name=${{ steps.versions.outputs.gui_version }}
